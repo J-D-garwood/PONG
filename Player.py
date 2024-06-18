@@ -1,12 +1,20 @@
 import pyglet
 from pyglet import shapes
 class Player:
-    def __init__(self, x, y) -> None:
-        pass
-    x = 310
-    y = 10
-    disp = shapes.Rectangle(10, 10, 70, 10, color=(255, 255, 255), batch=batch)
-
+    def __init__(self) -> None:
+        self.score = 0
+    
+    def add_to_score(self) -> int:
+        self.score = self.score + 1
+        return self.score
+    
+    def return_score(self) -> int:
+        return self.score
+    
+    def reset2zero(self) -> None:
+        self.score = 0
+    
+    
     
 
 
