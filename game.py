@@ -9,11 +9,61 @@ from pyglet.window import mouse
 from pyglet import font
 font.add_file('resources/Pixellettersfull-BnJ5.ttf')
 from Player import Player
-from pongtitle import letter_patterns, DRAW_TIT
-
 window = pyglet.window.Window(640, 427)
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
+
+square_size = 10
+
+# Define the letter patterns (5x5 grid for each letter)
+letter_patterns = {
+    'P': [
+        "#####",
+        "#...#",
+        "#####",
+        "#....",
+        "#...."
+    ],
+    'O': [
+        "#####",
+        "#...#",
+        "#...#",
+        "#...#",
+        "#####"
+    ],
+    'N': [
+        "#...#",
+        "##..#",
+        "#.#.#",
+        "#..##",
+        "#...#"
+    ],
+    'G': [
+        "#####",
+        "#....",
+        "#..##",
+        "#...#",
+        "#####"
+    ]
+}
+
+def DRAW_TIT(window):
+    total_width = 4 * 5 * square_size + 3 * square_size  # 4 letters with 5 squares each and 3 spaces between them
+    start_x = (window.width - total_width) // 2
+    start_y = ((window.height + 5 * square_size) // 2)+60
+    
+    x_offset = start_x
+    for letter in "PONG":
+        pattern = letter_patterns[letter]
+        for y, row in enumerate(pattern):
+            for x, col in enumerate(row):
+                if col == '#':
+                    x0 = x_offset + x * square_size
+                    y0 = start_y - y * square_size
+                    square = shapes.Rectangle(x0, y0, square_size, square_size, color=(255, 255, 255))
+                    square.draw()
+        x_offset += 6 * square_size  # Move to the next letter position (5 squares + 1 space)
+
 
 # menu screen
 standard_mode_button_txt = pyglet.text.Label('Standard',color=(255, 0, 0, 255),
@@ -56,6 +106,18 @@ you_lost_text = pyglet.text.Label('You lost :(',
                           x=window.width//2, y=window.height//2,
                           anchor_x='center', anchor_y='center')
 
+restart_txt= pyglet.text.Label('Press \'r\' to restart.',
+                          font_name='Times New Roman',
+                          font_size=15,
+                          x=window.width//2, y=window.height//2-50,
+                          anchor_x='center', anchor_y='center')
+
+exit_txt= pyglet.text.Label('Press \'e\' to exit to menu.',
+                          font_name='Times New Roman',
+                          font_size=15,
+                          x=window.width//2, y=window.height//2-80,
+                          anchor_x='center', anchor_y='center')
+
 def check_scores(player1, player2):
     global GameOn
     global standard
@@ -65,12 +127,16 @@ def check_scores(player1, player2):
             you_win_text.draw()
         elif(oneVone):
             p1_wins_text.draw()
+        restart_txt.draw()
+        exit_txt.draw()
         return True
     elif (player2.score==1):
         if(standard):
             you_lost_text.draw()
         elif(oneVone):
             p2_wins_text.draw()
+        restart_txt.draw()
+        exit_txt.draw()
         return True
     else:
         return False
@@ -278,7 +344,7 @@ def on_draw():
     else:
         image.blit(0, 0)
         render_menu_screen()
-        DRAW_TIT()
+        DRAW_TIT(window)
 
 @window.event 
 def on_key_press(symbol, modifiers):
@@ -289,6 +355,9 @@ def on_key_press(symbol, modifiers):
     global player2
     if (option2Reset):
         if (symbol==key.R):
+            player1.reset2zero()
+            player2.reset2zero()
+        if (symbol==key.E):
             GameOn = False
             standard = False
             oneVone = False
