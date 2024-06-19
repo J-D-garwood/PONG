@@ -2,6 +2,7 @@ import pyglet
 from pyglet import shapes
 batch = pyglet.graphics.Batch()
 batch_menu = pyglet.graphics.Batch()
+batch_2 = pyglet.graphics.Batch()
 batch_line = pyglet.graphics.Batch()
 from pyglet.window import key
 from pyglet.window import mouse
@@ -124,8 +125,8 @@ ai_y = 407
 target_x = 310
 
 # Ball variables
-ball_x_speed = 3
-ball_y_speed = 3
+ball_x_speed = 4
+ball_y_speed = 4
 Ball_init = False
 direction_change = False
 
@@ -142,7 +143,10 @@ player2 = Player()
 
 ball_image = pyglet.image.load("resources/updated_ball_image.png")
 ball = pyglet.sprite.Sprite(ball_image, x=0, y=0)
+
 player = shapes.Rectangle(player_x, player_y, 70, 10, color=(255, 255, 255), batch=batch)
+player1Rect = shapes.Rectangle(player_x, player_y, 70, 10, color=(0, 0, 255), batch=batch_2)
+player2Rect = shapes.Rectangle(ai_x, ai_y, 70, 10, color=(255, 0, 0), batch=batch_2)
 ai = shapes.Rectangle(ai_x, ai_y, 70, 10, color=(255, 255, 255), batch=batch)
 image = pyglet.resource.image('resources/menu_wallpaper.jpg')
 
@@ -150,14 +154,14 @@ image = pyglet.resource.image('resources/menu_wallpaper.jpg')
 def calc_ideal_location():
     global ball_x_speed
     global ball_y_speed
-    if (ball_y_speed==-3):
+    if (ball_y_speed==-4):
         return 310
     else:
         rolling_x = ball.x
         rolling_y = ball.y
         while (rolling_y<427):
             rolling_x+=ball_x_speed
-            rolling_y+=3
+            rolling_y+=4
         return rolling_x
 
 def wall_rebound_location(old_target):
@@ -167,32 +171,38 @@ def wall_rebound_location(old_target):
     rolling_y = 427
     while (im_x>640 or im_x<0):
         im_x-=ball_x_speed
-        rolling_y-=3
+        rolling_y-=4
     while(rolling_y<427):
         im_x+=ball_x_speed
-        rolling_y+=3
+        rolling_y+=4
     return im_x
 
 def move_ai():
     global ball_x_speed
     global ball_y_speed
     global target_x
+    global change
+    global change_count
     target_x = calc_ideal_location()
     if (target_x>640 or target_x<0):
         target_x_2 = wall_rebound_location(target_x)
+        if (ai.x<target_x-30 and ai.x>target_x-35):
+            return
         if (ai.x<target_x_2-35):
             if (ai.x<550):
-                ai.x+=1
-        else:
+                ai.x+=4
+        elif (ai.x>target_x_2-35):
             if (ai.x>10):
-                ai.x-=1
+                ai.x-=4
     else:
+        if (ai.x<target_x-30 and ai.x>target_x-35):
+            return
         if (ai.x<target_x-35):
             if (ai.x<550):
-                ai.x+=1
-        else:
+                ai.x+=4
+        elif (ai.x>target_x-35):
             if (ai.x>10):
-                ai.x-=1
+                ai.x-=4
     return
 
 def move_ball(p1_x, p1_y, ai_x, ai_y):
@@ -220,11 +230,11 @@ def move_ball(p1_x, p1_y, ai_x, ai_y):
                     ball_y_speed *= -1
                     return
 
-        elif (ball.x>p1_x and ball.x<(p1_x+70) and ball.y>(p1_y+8) and ball.y<(p1_y+14)):
+        elif (ball.x>p1_x-10 and ball.x<(p1_x+80) and ball.y>(p1_y+8) and ball.y<(p1_y+14)):
             ball_y_speed *= -1
             ball.x += ball_x_speed
             ball.y += ball_y_speed
-        elif (ball.x>ai_x and ball.x<(ai_x+70) and ball.y>(ai_y-5) and ball.y<(ai_y)):
+        elif (ball.x>ai_x-10 and ball.x<(ai_x+80) and ball.y>(ai_y-5) and ball.y<(ai_y+5)):
             ball_y_speed *= -1
             ball.x += ball_x_speed
             ball.y += ball_y_speed
@@ -259,8 +269,8 @@ def on_draw():
             if (not check):
                 render_halfway_line()
                 render_scores(player1, player2)
-                move_ball(player.x, player.y, ai.x, ai.y)
-                batch.draw()
+                move_ball(player1Rect.x, player1Rect.y, player2Rect.x, player2Rect.y)
+                batch_2.draw()
             else: 
                 check_scores(player1, player2)
                 option2Reset = True
@@ -293,16 +303,16 @@ def on_key_press(symbol, modifiers):
     elif GameOn and oneVone:
         if (symbol==key.LEFT):
             if(player.x>10):
-                player.x -= 35
+                player1Rect.x -= 35
         elif (symbol==key.RIGHT):
             if(player.x<550):
-                player.x += 35
+                player1Rect.x += 35
         elif (symbol==key.D):
             if(ai.x<550):
-                ai.x += 35
+                player2Rect.x += 35
         elif (symbol==key.A):
             if(ai.x>10):
-                ai.x -= 35
+                player2Rect.x -= 35
         return
     
 @window.event 
