@@ -9,6 +9,7 @@ from pyglet.window import mouse
 from pyglet import font
 font.add_file('resources/Pixellettersfull-BnJ5.ttf')
 from Player import Player
+from pongtitle import letter_patterns, DRAW_TIT
 
 window = pyglet.window.Window(640, 427)
 keys = key.KeyStateHandler()
@@ -125,8 +126,8 @@ ai_y = 407
 target_x = 310
 
 # Ball variables
-ball_x_speed = 4
-ball_y_speed = 4
+ball_x_speed = 8
+ball_y_speed = 8
 Ball_init = False
 direction_change = False
 
@@ -154,14 +155,14 @@ image = pyglet.resource.image('resources/menu_wallpaper.jpg')
 def calc_ideal_location():
     global ball_x_speed
     global ball_y_speed
-    if (ball_y_speed==-4):
+    if (ball_y_speed==-8):
         return 310
     else:
         rolling_x = ball.x
         rolling_y = ball.y
         while (rolling_y<427):
             rolling_x+=ball_x_speed
-            rolling_y+=4
+            rolling_y+=8
         return rolling_x
 
 def wall_rebound_location(old_target):
@@ -171,10 +172,10 @@ def wall_rebound_location(old_target):
     rolling_y = 427
     while (im_x>640 or im_x<0):
         im_x-=ball_x_speed
-        rolling_y-=4
+        rolling_y-=8
     while(rolling_y<427):
         im_x+=ball_x_speed
-        rolling_y+=4
+        rolling_y+=8
     return im_x
 
 def move_ai():
@@ -186,23 +187,23 @@ def move_ai():
     target_x = calc_ideal_location()
     if (target_x>640 or target_x<0):
         target_x_2 = wall_rebound_location(target_x)
-        if (ai.x<target_x-30 and ai.x>target_x-35):
+        if (ai.x<target_x-29 and ai.x>target_x-36):
             return
         if (ai.x<target_x_2-35):
             if (ai.x<550):
-                ai.x+=4
+                ai.x+=6
         elif (ai.x>target_x_2-35):
             if (ai.x>10):
-                ai.x-=4
+                ai.x-=6
     else:
-        if (ai.x<target_x-30 and ai.x>target_x-35):
+        if (ai.x<target_x-29 and ai.x>target_x-36):
             return
         if (ai.x<target_x-35):
             if (ai.x<550):
-                ai.x+=4
+                ai.x+=6
         elif (ai.x>target_x-35):
             if (ai.x>10):
-                ai.x-=4
+                ai.x-=6
     return
 
 def move_ball(p1_x, p1_y, ai_x, ai_y):
@@ -277,6 +278,7 @@ def on_draw():
     else:
         image.blit(0, 0)
         render_menu_screen()
+        DRAW_TIT()
 
 @window.event 
 def on_key_press(symbol, modifiers):
